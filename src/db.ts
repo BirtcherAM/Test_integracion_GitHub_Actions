@@ -1,9 +1,14 @@
 import { Pool } from "pg";
+import dotenv from "dotenv";
+
+// Cargar variables desde .env (solo localmente)
+dotenv.config();
 
 export const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  user: "demo",
-  password: "demo",
-  database: "demo_db"
+  host: process.env.PGHOST,
+  port: Number(process.env.PGPORT),
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  database: process.env.PGDATABASE,
 });
+

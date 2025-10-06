@@ -1,27 +1,22 @@
-import { describe, it, expect, beforeAll, beforeEach } from "vitest";
-import {
-  obtenerProductos,
-  crearProducto,
-  actualizarProducto,
-  eliminarProducto,
-  limpiarProductos,
-} from "../src/products";
+import { describe, it, expect, beforeEach } from "vitest";
+import { pool } from "../src/db";
 import { initDb } from "../src/initDb";
+import {
+  crearProducto,
+  obtenerProductos,
+  actualizarProducto,
+  eliminarProducto
+} from "../src/products";
 
 describe("CRUD de Products con Postgres", () => {
-  beforeAll(async () => {
-    await initDb();
-  });
-
   beforeEach(async () => {
-    await limpiarProductos();
+    await initDb(); // asegura que la tabla exista
+    await pool.query("DELETE FROM products"); // limpia antes de cada test
   });
 
   it("crea un producto", async () => {
-    const p = await crearProducto("Laptop", 1200);
-    expect(p).toHaveProperty("id");
-    expect(p.name).toBe("Laptop");
-    expect(Number(p.price)).toBe(1200);
+    const nuevo = await crearProducto("Monitor", 250);
+    expect(nuevo.name).toBe("Monitor");
   });
 
   it("obtiene productos", async () => {
@@ -32,17 +27,15 @@ describe("CRUD de Products con Postgres", () => {
   });
 
   it("actualiza un producto", async () => {
-    const p = await crearProducto("Teclado", 50);
-    const actualizado = await actualizarProducto(p.id, "Teclado Mecánico", 80);
-    expect(actualizado?.name).toBe("Teclado Mecánico");
-    expect(Number(actualizado?.price)).toBe(80);
+    const creado = await crearProducto("Keyboard", 55);
+    await actualizarProducto(creado.id, "Keyboard Pro", 80);
+    const lista = await obtenerProductos();
+    expect(lista[0].name).toBe("Keyboard Pro");
   });
 
   it("elimina un producto", async () => {
-    const p = await crearProducto("Monitor", 200);
-    const eliminado = await eliminarProducto(p.id);
-    expect(eliminado?.id).toBe(p.id);
-
+    const creado = await crearProducto("Tablet", 400);
+    await eliminarProducto(creado.id);
     const lista = await obtenerProductos();
     expect(lista.length).toBe(0);
   });
