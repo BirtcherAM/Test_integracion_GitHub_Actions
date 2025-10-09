@@ -1,6 +1,6 @@
 import { crearProducto, obtenerProductos } from "./products";
 import { initDb } from "./initDb";
-// Script de prueba para insertar un producto y listar todos
+// Script de prueba para insertar un producto y listar todos los productos
 async function main() {
   await initDb();
   console.log("Insertando producto de prueba...");
